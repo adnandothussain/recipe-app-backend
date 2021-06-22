@@ -1,0 +1,8 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": ".ts,.js,.json",
+  "ignore": [],
+  "exec": "cross-env NODE_PATH=./src NODE_ENV=dev ts-node -r dotenv/config ./src/server.ts"
+}

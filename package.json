@@ -1,0 +1,31 @@
+{
+  "name": "recipe-app-backend",
+  "version": "1.0.0",
+  "description": "Backend for recipe app",
+  "main": "index.js",
+  "repository": "https://github.com/adnandothussain/recipe-app-backend.git",
+  "author": "Adnan Hussain <adnanrajput42@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "./node_modules/.bin/tsc --noEmit -p tsconfig.json",
+    "dev": "nodemon",
+    "debug": "nodemon --debug=6666",
+    "build": "yarn tsc",
+    "update-schema": "ts-node ./src/schema/updateSchema.ts"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.25.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "graphql": "^15.5.1",
+    "graphql-compose": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "ts-node": "^10.0.0",
+    "tsc": "^2.0.3",
+    "typescript": "^4.3.4"
+  }
+}
