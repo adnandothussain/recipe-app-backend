@@ -54,7 +54,7 @@ schemaComposer.Query.addFields({
     type: 'Author',
     args: { id: 'Int!' },
     // resolve the author from the db
-    resolve: (_, { id }) => [],
+    resolve: () => [],
   },
 });
 

@@ -1,5 +1,11 @@
-const environment = process.env.NODE_ENV || 'development';
+interface IENV {
+  env: string;
+  MONGO_URL: string;
+}
 
-export default {
-  env: environment,
+const config: IENV = {
+  env: process.env.NODE_ENV || '',
+  MONGO_URL: process.env.MONGO_URL || '',
 };
+
+export default config;

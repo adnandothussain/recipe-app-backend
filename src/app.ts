@@ -7,7 +7,7 @@ const app = express();
 const graphQLServer = new GraphQLServer().getApolloServer();
 graphQLServer.applyMiddleware({ app });
 
-const { MONGO_URL, PORT } = process.env;
+const { PORT } = process.env;
 const APP_PORT = PORT || 3000;
 
 app.use(cors());
@@ -19,5 +19,6 @@ app.get('/', async (_, res) => {
 });
 
 app.listen(APP_PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`The server is running at http://localhost:${APP_PORT}`);
 });

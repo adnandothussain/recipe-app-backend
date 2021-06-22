@@ -7,10 +7,10 @@
   "author": "Adnan Hussain <adnanrajput42@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "./node_modules/.bin/tsc --noEmit -p tsconfig.json",
+    "lint": "eslint --fix ./src",
     "dev": "nodemon",
     "debug": "nodemon --debug=6666",
-    "build": "yarn tsc",
+    "build": "tsc",
     "update-schema": "ts-node ./src/schema/updateSchema.ts"
   },
   "dependencies": {
@@ -20,12 +20,34 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql": "^15.5.1",
-    "graphql-compose": "^9.0.1"
+    "graphql-compose": "^9.0.1",
+    "husky": "4.3.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "lint-staged": "^11.0.0",
     "nodemon": "^2.0.7",
+    "prettier": "^2.3.1",
     "ts-node": "^10.0.0",
     "tsc": "^2.0.3",
     "typescript": "^4.3.4"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix ./src",
+      "prettier --write ./src"
+    ]
   }
 }

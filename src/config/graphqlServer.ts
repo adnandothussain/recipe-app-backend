@@ -18,7 +18,6 @@ export default class GraphQLServer {
     if (this.apolloServer === null) {
       throw new Error('build the server before getting the server');
     }
-
     return this.apolloServer;
   }
 }
