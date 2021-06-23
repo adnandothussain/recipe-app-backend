@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import GraphQLServer from './config/graphqlServer';
+import routes from './routes';
 
 const app = express();
 
@@ -13,6 +14,8 @@ const APP_PORT = PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+app.use('/api', routes);
 
 app.get('/', async (_, res) => {
   res.send('Hello Web!');
