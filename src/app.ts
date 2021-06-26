@@ -2,9 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import GraphQLServer from './config/graphqlServer';
 import routes from './routes';
+import { InitDb } from './database';
 
 const app = express();
-
+InitDb(); // Initialize the database
 const graphQLServer = new GraphQLServer().getApolloServer();
 graphQLServer.applyMiddleware({ app });
 
