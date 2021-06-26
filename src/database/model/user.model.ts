@@ -2,9 +2,25 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 import { Gender } from './enum.model';
-import { transformID } from './helpers.model';
 
-const UserSchema = new Schema(
+export const DOCUMENT_NAME = 'User';
+export const COLLECTION_NAME = 'users';
+
+export default interface User extends Document {
+  id?: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  name?: string;
+  username: string;
+  password: string;
+  gender: Gender;
+  avatar: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const UserSchema = new Schema<User>(
   {
     email: {
       type: String,
@@ -80,4 +96,4 @@ UserSchema.methods.comparePassword = async function comparePassword(password) {
   }
 };
 
-export default model('User', transformID(UserSchema));
+export const UserModel = model<User>(DOCUMENT_NAME, UserSchema, COLLECTION_NAME);
