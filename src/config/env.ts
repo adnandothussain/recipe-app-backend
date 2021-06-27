@@ -1,6 +1,6 @@
 interface IToken {
-  ISSUER: string;
-  AUDIENCE: string;
+  TOKEN_ISSUER: string;
+  TOKEN_AUDIENCE: string;
   ACCESS_TOKEN_VALIDITY_DAYS: number;
 }
 
@@ -16,8 +16,8 @@ const config: IENV = {
   MONGO_URL: process.env.MONGO_URL || '',
   LOG_DIR: process.env.LOG_DIR || '',
   token: {
-    ISSUER: process.env.ISSUER || '',
-    AUDIENCE: process.env.AUDIENCE || '',
+    TOKEN_ISSUER: process.env.TOKEN_ISSUER || '',
+    TOKEN_AUDIENCE: process.env.TOKEN_AUDIENCE || '',
     ACCESS_TOKEN_VALIDITY_DAYS: Number(process.env.ACCESS_TOKEN_VALIDITY_DAYS || '7'),
   },
 };

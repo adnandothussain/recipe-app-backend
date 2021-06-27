@@ -70,7 +70,7 @@ export default class UserRepo {
     user.createdAt = user.updatedAt = now;
     const createdUser = await UserModel.create(user);
     const keystore = await KeystoreRepo.create(createdUser._id, accessTokenKey, refreshTokenKey);
-    return { user: createdUser.toObject(), keystore: keystore };
+    return { user: createdUser.toJSON(), keystore: keystore };
   }
 
   public static async update(
@@ -82,7 +82,7 @@ export default class UserRepo {
     await UserModel.updateOne({ _id: user.id }, { $set: { ...user } })
       .lean()
       .exec();
-    const keystore = await KeystoreRepo.create(user.id!, accessTokenKey, refreshTokenKey);
+    const keystore = await KeystoreRepo.create(user, accessTokenKey, refreshTokenKey);
     return { user: user, keystore: keystore };
   }
 

@@ -3,7 +3,7 @@ import authRoutes from './auth.route';
 
 const router = express.Router();
 
-router.get('/api/health-check', (_, res) => res.send('OK'));
-router.get('/api/auth', authRoutes);
+router.get('/health-check', (_, res) => res.send('OK'));
+router.use('/auth', authRoutes);
 
 export default router;

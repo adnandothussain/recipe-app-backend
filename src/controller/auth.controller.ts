@@ -24,8 +24,9 @@ const login = async (req: Request, res: Response) => {
   const accessTokenKey = crypto.randomBytes(64).toString('hex');
   const refreshTokenKey = crypto.randomBytes(64).toString('hex');
 
-  await KeystoreRepo.create(user.id!, accessTokenKey, refreshTokenKey);
-  const tokens = await createTokens(user, accessTokenKey, refreshTokenKey);
+  await KeystoreRepo.create(user, accessTokenKey, refreshTokenKey);
+  // @ts-ignore
+  const tokens = await createTokens({ ...user, id: user._id }, accessTokenKey, refreshTokenKey);
 
   new SuccessResponse('Login Success', {
     user: _.pick(user, ['id', 'name', 'email', 'avatar']),
@@ -35,7 +36,6 @@ const login = async (req: Request, res: Response) => {
 
 const refreshToken = async (req: ProtectedRequest, res: Response) => {
   req.accessToken = getAccessToken(req.headers.authorization); // Express headers are auto converted to lowercase
-
   const accessTokenPayload = await JWT.decode(req.accessToken);
   validateTokenData(accessTokenPayload);
 
@@ -45,12 +45,11 @@ const refreshToken = async (req: ProtectedRequest, res: Response) => {
 
   const refreshTokenPayload = await JWT.validate(req.body.refreshToken);
   validateTokenData(refreshTokenPayload);
-
   if (accessTokenPayload.sub !== refreshTokenPayload.sub)
     throw new AuthFailureError('Invalid access token');
 
   const keystore = await KeystoreRepo.find(
-    req.user.id!,
+    req.user,
     accessTokenPayload.prm,
     refreshTokenPayload.prm,
   );
@@ -61,7 +60,7 @@ const refreshToken = async (req: ProtectedRequest, res: Response) => {
   const accessTokenKey = crypto.randomBytes(64).toString('hex');
   const refreshTokenKey = crypto.randomBytes(64).toString('hex');
 
-  await KeystoreRepo.create(req.user.id!, accessTokenKey, refreshTokenKey);
+  await KeystoreRepo.create(req.user, accessTokenKey, refreshTokenKey);
   const tokens = await createTokens(req.user, accessTokenKey, refreshTokenKey);
 
   new TokenRefreshResponse('Token Issued', tokens.accessToken, tokens.refreshToken).send(res);
@@ -73,7 +72,6 @@ const signup = async (req: ProtectedRequest, res: Response) => {
 
   const accessTokenKey = crypto.randomBytes(64).toString('hex');
   const refreshTokenKey = crypto.randomBytes(64).toString('hex');
-  const passwordHash = await bcrypt.hash(req.body.password, 10);
 
   const { user: createdUser, keystore } = await UserRepo.create(
     {
@@ -83,7 +81,7 @@ const signup = async (req: ProtectedRequest, res: Response) => {
       username: req.body.username,
       avatar: req.body.avatar,
       gender: req.body.gender,
-      password: passwordHash,
+      password: req.body.password,
     } as User,
     accessTokenKey,
     refreshTokenKey,
@@ -91,7 +89,7 @@ const signup = async (req: ProtectedRequest, res: Response) => {
 
   const tokens = await createTokens(createdUser, keystore.primaryKey, keystore.secondaryKey);
   new SuccessResponse('Signup Successful', {
-    user,
+    user: createdUser,
     tokens: tokens,
   }).send(res);
 };

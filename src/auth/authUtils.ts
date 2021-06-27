@@ -19,8 +19,8 @@ export const validateTokenData = (payload: JwtPayload): boolean => {
     !payload.sub ||
     !payload.aud ||
     !payload.prm ||
-    payload.iss !== config.token.ISSUER ||
-    payload.aud !== config.token.AUDIENCE ||
+    payload.iss !== config.token.TOKEN_ISSUER ||
+    payload.aud !== config.token.TOKEN_AUDIENCE ||
     !Types.ObjectId.isValid(payload.sub)
   )
     throw new AuthFailureError('Invalid Access Token');
@@ -34,8 +34,8 @@ export const createTokens = async (
 ): Promise<Tokens> => {
   const accessToken = await JWT.encode(
     new JwtPayload(
-      config.token.ISSUER,
-      config.token.AUDIENCE,
+      config.token.TOKEN_ISSUER,
+      config.token.TOKEN_AUDIENCE,
       user.id!,
       accessTokenKey,
       config.token.ACCESS_TOKEN_VALIDITY_DAYS,
@@ -45,7 +45,12 @@ export const createTokens = async (
   if (!accessToken) throw new InternalError();
 
   const refreshToken = await JWT.encode(
-    new JwtPayload(config.token.ISSUER, config.token.AUDIENCE, user.id!, refreshTokenKey),
+    new JwtPayload(
+      config.token.TOKEN_ISSUER,
+      config.token.TOKEN_AUDIENCE,
+      user.id!,
+      refreshTokenKey,
+    ),
   );
 
   if (!refreshToken) throw new InternalError();

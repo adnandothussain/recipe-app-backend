@@ -13,12 +13,12 @@ export default class KeystoreRepo {
   }
 
   public static find(
-    client: string,
+    client: User,
     primaryKey: string,
     secondaryKey: string,
   ): Promise<Keystore | null> {
     return KeystoreModel.findOne({
-      client: client as any,
+      client,
       primaryKey: primaryKey,
       secondaryKey: secondaryKey,
     })
@@ -27,13 +27,13 @@ export default class KeystoreRepo {
   }
 
   public static async create(
-    client: string,
+    client: User,
     primaryKey: string,
     secondaryKey: string,
   ): Promise<Keystore> {
     const now = new Date();
     const keystore = await KeystoreModel.create({
-      client: client,
+      client,
       primaryKey: primaryKey,
       secondaryKey: secondaryKey,
       createdAt: now,

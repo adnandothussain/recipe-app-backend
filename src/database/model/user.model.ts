@@ -57,10 +57,25 @@ const UserSchema = new Schema<User>(
     },
     avatar: {
       type: Schema.Types.ObjectId,
-      ref: 'Image',
+    },
+    status: {
+      type: Schema.Types.Boolean,
+      default: true,
     },
   },
-  { timestamps: true },
+  {
+    toJSON: {
+      virtuals: true,
+      transform: function (_, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.password_reset;
+        return ret;
+      },
+    },
+    timestamps: true,
+  },
 );
 
 UserSchema.pre('save', async function callback(next) {

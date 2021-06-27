@@ -63,7 +63,7 @@ export class JwtPayload {
   aud: string;
   sub: string;
   iss: string;
-  iat: number;
+  iat?: number;
   exp?: number;
   prm: string;
 
@@ -73,6 +73,10 @@ export class JwtPayload {
     this.sub = subject;
     this.iat = Math.floor(Date.now() / 1000);
     this.exp = validity ? this.iat + validity * 24 * 60 * 60 : undefined;
+    if (!this.exp) {
+      delete this.exp;
+      delete this.iat;
+    }
     this.prm = param;
   }
 }

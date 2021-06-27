@@ -1,8 +1,8 @@
 import Joi from '@hapi/joi';
 import { Request, Response, NextFunction } from 'express';
-// import Logger from '../core/Logger';
-import { BadRequestError } from '../core/ApiError';
 import { Types } from 'mongoose';
+import { BadRequestError } from '../core/ApiError';
+import Logger from '../core/Logger';
 
 export enum ValidationSource {
   BODY = 'body',
@@ -41,7 +41,7 @@ export default (schema: Joi.ObjectSchema, source: ValidationSource = ValidationS
       const message = details
         .map((i: { message: string }) => i.message.replace(/['"]+/g, ''))
         .join(',');
-      // Logger.error(message);
+      Logger.error(message);
 
       next(new BadRequestError(message));
     } catch (error) {
