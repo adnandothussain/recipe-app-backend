@@ -1,8 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import GraphQLServer from './config/graphqlServer';
 import routes from './routes';
 import { InitDb } from './database';
+import { ApiError, InternalError } from './core/ApiError';
+import config from './config';
+import Logger from './core/Logger';
 
 const app = express();
 InitDb(); // Initialize the database
@@ -20,6 +23,17 @@ app.use('/api', routes);
 
 app.get('/', async (_, res) => {
   res.send('Hello Web!');
+});
+app.use(function (err: Error, _: Request, res: Response, next: any) {
+  if (err instanceof ApiError) {
+    return ApiError.handle(err, res);
+  }
+  if (config.env === 'development') {
+    Logger.error(err);
+    return res.status(500).send(err.message);
+  }
+  ApiError.handle(new InternalError(), res);
+  next(err);
 });
 
 app.listen(APP_PORT, () => {
