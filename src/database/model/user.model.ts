@@ -44,10 +44,11 @@ const UserSchema = new Schema<User>(
     username: {
       type: String,
       lowercase: true,
+      required: false,
     },
     password: {
       type: String,
-      required: false,
+      required: true,
       select: false,
     },
     gender: {
@@ -57,6 +58,7 @@ const UserSchema = new Schema<User>(
     },
     avatar: {
       type: Schema.Types.ObjectId,
+      required: false,
     },
     status: {
       type: Schema.Types.Boolean,
@@ -71,6 +73,7 @@ const UserSchema = new Schema<User>(
         delete ret._id;
         delete ret.password;
         delete ret.password_reset;
+        delete ret.__v;
         return ret;
       },
     },

@@ -75,12 +75,7 @@ const signup = async (req: ProtectedRequest, res: Response) => {
 
   const { user: createdUser, keystore } = await UserRepo.create(
     {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
       email: req.body.email,
-      username: req.body.username,
-      avatar: req.body.avatar,
-      gender: req.body.gender,
       password: req.body.password,
     } as User,
     accessTokenKey,
@@ -94,8 +89,21 @@ const signup = async (req: ProtectedRequest, res: Response) => {
   }).send(res);
 };
 
+const updateUser = async (req: ProtectedRequest, res: Response) => {
+  const { firstName, lastName, username, avatar } = req.body;
+  const updatedUser = await UserRepo.updateInfo({
+    id: req.user.id,
+    firstName,
+    lastName,
+    username,
+    avatar,
+  } as User);
+  new SuccessResponse('Signup Successful', updatedUser).send(res);
+};
+
 export const AuthController = {
   login,
   signup,
   refreshToken,
+  updateUser,
 };
