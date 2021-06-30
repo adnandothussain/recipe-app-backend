@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-import { Gender } from './enum.model';
+import { Gender } from './constant.model';
 
 export const DOCUMENT_NAME = 'User';
 export const COLLECTION_NAME = 'users';

@@ -1,5 +1,5 @@
 import Joi from '@hapi/joi';
-import { Gender } from '../database/model/enum.model';
+import { Gender } from '../database/model/constant.model';
 import { JoiAuthBearer } from './validation';
 
 export default {
