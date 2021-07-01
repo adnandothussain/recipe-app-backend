@@ -6,40 +6,44 @@ export interface IRecipeSeedData {
   description: string;
   image: string;
   rating?: number;
-  tags?: string[];
-  ingredients: IIngredient[];
+  tag?: string[];
+  ingredient: IIngredient[];
   ingredientGroup?: { name: string; ingredient: IIngredient[] }[];
   restraunts?: string[];
-  instructions: string[];
+  step: { description: string }[];
   cookingTime?: number; // in minutes
   serving?: number; // no of peoples
   calories?: number;
 }
 
 export const RecipeSeeds = async (dataSet: IRecipeSeedData[]) => {
-  const res = await RecipeModel.insertMany(
-    dataSet.map(
-      (val) =>
-        ({
-          name: val.name,
-          description: val.description,
-          image: val.image,
-          rating: val.rating || 0,
-          tags: val.tags || [],
-          ingredients: val.ingredientGroup?.some((val) => val.ingredient.length)
-            ? (val.ingredientGroup.reduce(
-                (acc, current) =>
-                  acc.concat(current.ingredient.map((ing) => ({ ...ing, group: current.name }))),
-                [] as IIngredient[],
-              ) as any[])
-            : val.ingredients,
-          instructions: val.instructions,
-        } as Recipe),
-    ),
-  );
-  // eslint-disable-next-line no-console
-  console.log(
-    'res=>',
-    res.map((val) => val.toJSON()),
+  await RecipeModel.insertMany(
+    dataSet.map((val) => {
+      return {
+        name: val.name,
+        description: val.description,
+        image: val.image,
+        rating: val.rating || 0,
+        tags: val.tag || [],
+        ingredients: val.ingredientGroup?.some((val) => val.ingredient.length)
+          ? (val.ingredientGroup.reduce(
+              (acc, current) =>
+                acc.concat(
+                  current.ingredient.map((ing) => ({
+                    ...ing,
+                    group: current.name,
+                    amount: ing.amount || '0',
+                  })),
+                ),
+              [] as IIngredient[],
+            ) as any[])
+          : val.ingredient.map((ingredient: any) => ({
+              amount: ingredient.amount || '0',
+              name: ingredient.name || '0',
+              group: ingredient.group,
+            })),
+        instructions: val.step.map((step) => step.description),
+      } as Recipe;
+    }),
   );
 };

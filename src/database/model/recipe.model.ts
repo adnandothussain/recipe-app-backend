@@ -3,7 +3,7 @@ import { defaultModelOptions } from './constant.model';
 import { IIngredient, IRecipeTip } from '../../typings/recipe';
 
 export const DOCUMENT_NAME = 'Recipe';
-export const COLLECTION_NAME = 'Recipes';
+export const COLLECTION_NAME = 'recipes';
 
 export default interface Recipe extends Document {
   name: string;
@@ -63,9 +63,9 @@ const schema = new Schema<Recipe>(
     ],
     ingredients: [
       {
-        amount: { type: Number, required: true },
+        amount: { type: String, required: true },
         name: { type: String, required: true },
-        group: { type: String, required: false, default: 'All ingredients' },
+        group: { type: String, required: true, default: 'All ingredients' },
       },
     ],
     restraunts: [

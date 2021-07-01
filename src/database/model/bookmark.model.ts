@@ -4,7 +4,7 @@ import Recipe from './recipe.model';
 import User from './user.model';
 
 export const DOCUMENT_NAME = 'Bookmark';
-export const COLLECTION_NAME = 'Bookmarks';
+export const COLLECTION_NAME = 'bookmarks';
 
 export default interface Bookmark extends Document {
   user: User;
