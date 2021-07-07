@@ -1,14 +1,74 @@
-import { schemaComposer } from 'graphql-compose';
 import { composeMongoose } from 'graphql-compose-mongoose';
-import moment from 'moment';
+import { schemaComposer } from 'graphql-compose';
+// import moment from 'moment';
 import Logger from '../../core/Logger';
-import { RecipeModel } from '../../database/model/recipe.model';
 import RecipeRepo from '../../database/repository/recipe.repo';
+import { RecipeModel } from '../../database/model/recipe.model';
 
-const RecipeTC = composeMongoose(RecipeModel);
+export const RecipeTC = composeMongoose(RecipeModel);
 
-const RecipeFeedResolverTC = schemaComposer.createResolver({
-  type: [RecipeTC],
+// const RecipesResolverTC = schemaComposer.createResolver({
+//   type: [RecipeTC],
+//   args: {
+//     top: {
+//       type: 'Boolean',
+//       default: false,
+//     },
+//     recent: {
+//       type: 'Boolean',
+//       default: false,
+//     },
+//     byCusine: {
+//       type: 'Boolean',
+//       default: false,
+//     },
+//     trending: {
+//       type: 'Boolean',
+//       default: false,
+//     },
+//   },
+//   resolve: async ({ args }) => {
+//     try {
+//       const recipes = await RecipeRepo.findMany({
+//         dates: args.recent ? [moment().subtract(5, 'days').toDate(), new Date()] : undefined,
+//         top: Boolean(args.top),
+//       });
+//       return recipes;
+//     } catch (error) {
+//       Logger.warn(error);
+//       throw new Error('Unable to get top recipes');
+//     }
+//   },
+// });
+
+const RecipeFeedTC = schemaComposer.createObjectTC({
+  name: 'RecipeFeed',
+  fields: {
+    // hasData: 'Boolean!',
+    top: [RecipeTC],
+    recent: [RecipeTC],
+  },
+});
+
+// RecipeFeedTC.addRelation('top', {
+//   resolver: () => RecipesResolverTC,
+//   type: () => [RecipeTC],
+//   prepareArgs: {
+//     top: true,
+//   },
+// });
+
+// RecipeFeedTC.addRelation('recent', {
+//   resolver: () => RecipesResolverTC,
+//   type: () => [RecipeTC],
+//   prepareArgs: {
+//     recent: true,
+//   },
+// });
+
+RecipeTC.addResolver({
+  name: 'recipeFeed',
+  type: RecipeFeedTC,
   args: {
     top: {
       type: 'Boolean',
@@ -27,30 +87,23 @@ const RecipeFeedResolverTC = schemaComposer.createResolver({
       default: false,
     },
   },
-  resolve: async ({ args }) => {
+  resolve: async ({ args }: { args: { recent?: boolean; top?: boolean } }) => {
     try {
-      const recipes = await RecipeRepo.findMany({
-        dates: args.recent ? [moment().subtract(5, 'days').toDate(), new Date()] : undefined,
+      const topRecipes = await RecipeRepo.findMany({
         top: Boolean(args.top),
+        limit: 8,
       });
-      return recipes;
+      const recentRecipes = await RecipeRepo.findMany({
+        sort: { updatedAt: -1 },
+        limit: 10,
+      });
+      return { top: topRecipes, recent: recentRecipes };
     } catch (error) {
       Logger.warn(error);
       throw new Error('Unable to get top recipes');
     }
   },
 });
-
-const RecipeFeedTC = schemaComposer.createObjectTC({
-  name: 'RecipeFeed',
-});
-
-RecipeFeedTC.addRelation('top');
-
-// RecipeTC.addResolver({
-//   name: 'recipeFeed',
-//   type: RecipeFeedTC,
-// });
 
 // const RecipesITC = schemaComposer.createInputTC({
 //   name: 'RecipesFilter',

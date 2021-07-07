@@ -21,16 +21,22 @@ export default class RecipeRepo {
   public static async findMany({
     dates,
     top,
+    limit,
+    sort,
   }: {
     dates?: Date[];
     top?: boolean;
+    limit?: number;
+    sort?: any;
+    recents?: boolean;
   }): Promise<Recipe[]> {
     const filter: FilterQuery<Recipe> = {
       $or: [],
     };
+    const projection: any = {};
     if (dates?.[0] && dates?.[1]) {
       filter.$or?.push({
-        createdAt: {
+        updatedAt: {
           $gte: dates[0],
           $lte: dates[1],
         },
@@ -40,7 +46,9 @@ export default class RecipeRepo {
       filter.$or?.push({ rating: { $gte: 4 } });
     }
     if (!filter.$or?.length) delete filter.$or;
-    const recipes = await RecipeModel.find(filter);
+    if (limit) projection.limit = limit;
+    if (sort) projection.sort = sort;
+    const recipes = await RecipeModel.find(filter, null, { ...projection });
     return recipes.map((recipe) => recipe.toJSON()) as Recipe[];
   }
 }
