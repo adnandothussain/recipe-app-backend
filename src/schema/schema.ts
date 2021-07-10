@@ -1,10 +1,11 @@
 import { schemaComposer } from 'graphql-compose';
-import { RecipeTC, searchRecipes, searchRestraunts } from './composers';
+import { RecipeTC, UserTC, searchRecipes, searchRestraunts } from './composers';
 
 schemaComposer.Query.addFields({
   recipes: RecipeTC.getResolver('recipeFeed'),
   searchRecipes,
   searchRestraunts,
+  userById: UserTC.mongooseResolvers.findById(),
 });
 
 // Requests which modify data put into Mutation

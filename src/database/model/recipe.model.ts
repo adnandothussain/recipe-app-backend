@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 import { defaultModelOptions } from './constant.model';
 import { IIngredient, IRecipeTip } from '../../typings/recipe';
+import User from './user.model';
 
 export const DOCUMENT_NAME = 'Recipe';
 export const COLLECTION_NAME = 'recipes';
@@ -19,6 +20,7 @@ export default interface Recipe extends Document {
   cookingTime: number; // in minutes
   serving: number; // no of peoples
   calories: number;
+  createdBy: User;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -42,6 +44,11 @@ const schema = new Schema<Recipe>(
       type: Number,
       required: false,
       default: 0,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
     },
     tags: [
       {
