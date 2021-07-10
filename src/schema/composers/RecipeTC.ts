@@ -1,6 +1,5 @@
 import { composeMongoose } from 'graphql-compose-mongoose';
-import { schemaComposer } from 'graphql-compose';
-// import moment from 'moment';
+import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
 import Logger from '../../core/Logger';
 import RecipeRepo from '../../database/repository/recipe.repo';
 import { RecipeModel } from '../../database/model/recipe.model';
@@ -78,7 +77,7 @@ RecipeTC.addResolver({
       type: 'Boolean',
       default: false,
     },
-    byCusine: {
+    cusines: {
       type: 'Boolean',
       default: false,
     },
@@ -104,6 +103,53 @@ RecipeTC.addResolver({
     }
   },
 });
+
+export const searchRecipes = RecipeTC.mongooseResolvers
+  .connection({ name: 'searchRecipes' })
+  .wrap((rp) => {
+    rp.addArgs({
+      queryString: {
+        type: 'String',
+        defaultValue: null,
+        description: 'query string',
+      },
+    });
+    return rp;
+  })
+  .wrapResolve(
+    (next) =>
+      (rp: ResolverResolveParams<unknown, any, { queryString: string | null; filter: any }>) => {
+        const filters: any = {
+          OR: [],
+        };
+        if (rp.args.queryString != null) {
+          const { queryString } = rp.args;
+          filters.OR = [
+            {
+              _operators: {
+                name: { regex: new RegExp(queryString, 'i') },
+              },
+            },
+            {
+              _operators: {
+                description: { regex: new RegExp(queryString, 'i') },
+              },
+            },
+            {
+              _operators: { tags: { in: new RegExp(queryString, 'i') } },
+            },
+            {
+              _operators: {
+                ingredients: { $elemMatch: { name: { regex: new RegExp(queryString, 'i') } } },
+              },
+            },
+          ];
+        }
+        if (!filters.OR.length) delete filters.OR;
+        rp.args.filter = filters;
+        return next(rp);
+      },
+  );
 
 // const RecipesITC = schemaComposer.createInputTC({
 //   name: 'RecipesFilter',
