@@ -5,6 +5,7 @@ import { AuthFailureError, InternalError } from '../core/ApiError';
 import JWT, { JwtPayload } from '../core/JWT';
 import User from '../database/model/user.model';
 import config from '../config';
+import UserRepo from '../database/repository/user.repo';
 
 export const getAccessToken = (authorization?: string) => {
   if (!authorization) throw new AuthFailureError('Invalid Authorization');
@@ -60,3 +61,13 @@ export const createTokens = async (
     refreshToken: refreshToken,
   } as Tokens;
 };
+
+export async function getUserFromToken(tokenWithBearer: string) {
+  const token = getAccessToken(tokenWithBearer);
+  const tokenPayload = await JWT.validate(token);
+  const user = UserRepo.findProfileById(tokenPayload.sub);
+  if (user === null) {
+    throw new AuthFailureError('User not found!');
+  }
+  return user;
+}
