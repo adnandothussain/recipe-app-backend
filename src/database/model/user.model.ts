@@ -57,7 +57,7 @@ const UserSchema = new Schema<User>(
       required: false,
     },
     avatar: {
-      type: Schema.Types.ObjectId,
+      type: String,
       required: false,
     },
     status: {

@@ -3,6 +3,7 @@ import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
 import Logger from '../../core/Logger';
 import RecipeRepo from '../../database/repository/recipe.repo';
 import { RecipeModel } from '../../database/model/recipe.model';
+import { UserTC } from './UserTC';
 
 export const RecipeTC = composeMongoose(RecipeModel);
 
@@ -64,6 +65,14 @@ const RecipeFeedTC = schemaComposer.createObjectTC({
 //     recent: true,
 //   },
 // });
+
+RecipeTC.addRelation('createdBy', {
+  resolver: () => UserTC.mongooseResolvers.findById(),
+  prepareArgs: {
+    _id: (source) => source.createdBy,
+  },
+  projection: { createdBy: 1 },
+});
 
 RecipeTC.addResolver({
   name: 'recipeFeed',

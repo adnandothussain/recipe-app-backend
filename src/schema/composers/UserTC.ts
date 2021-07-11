@@ -6,10 +6,10 @@ import { RecipeTC } from './RecipeTC';
 export const UserTC = composeMongoose(UserModel);
 
 UserTC.addRelation('recipes', {
-  type: [RecipeTC],
+  resolver: () => RecipeTC.mongooseResolvers.connection({ name: 'userRecipes' }),
   prepareArgs: {
     filter: (source) => ({
-      user: source.id,
+      createdBy: source.id,
     }),
   },
   projection: {
