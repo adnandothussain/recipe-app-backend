@@ -1,5 +1,6 @@
 import { schemaComposer } from 'graphql-compose';
 import { RecipeTC, UserTC, searchRecipes, searchRestraunts } from './composers';
+import { RecipeRequestTC } from './composers/RecipeRequestTC';
 
 schemaComposer.Query.addFields({
   recipes: RecipeTC.getResolver('recipeFeed'),
@@ -10,17 +11,7 @@ schemaComposer.Query.addFields({
 
 // Requests which modify data put into Mutation
 schemaComposer.Mutation.addFields({
-  addPost: {
-    type: 'String!',
-    args: {
-      title: 'String',
-      votes: 'Int',
-      authorId: 'Int',
-    },
-    resolve: () => {
-      return '1';
-    },
-  },
+  requestRecipe: RecipeRequestTC.getResolver('requestRecipe'),
 });
 
 // And now buildSchema which will be passed to express-graphql or apollo-server
