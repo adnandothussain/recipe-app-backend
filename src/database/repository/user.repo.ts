@@ -37,16 +37,18 @@ export default class UserRepo {
     );
   }
 
-  public static findProfileById(id: Types.ObjectId): Promise<User | null> {
-    return UserModel.findOne({ _id: id, status: true })
-      .select('+roles')
-      .populate({
-        path: 'roles',
-        match: { status: true },
-        select: { code: 1 },
-      })
-      .lean<User>()
-      .exec();
+  public static findProfileById(id: Types.ObjectId | string): Promise<User | null> {
+    return (
+      UserModel.findOne({ _id: id, status: true })
+        // .select('+roles')
+        // .populate({
+        //   path: 'roles',
+        //   match: { status: true },
+        //   select: { code: 1 },
+        // })
+        .lean<User>()
+        .exec()
+    );
   }
 
   public static findPublicProfileById(id: Types.ObjectId): Promise<User | null> {
@@ -91,7 +93,11 @@ export default class UserRepo {
   public static async updateInfo(user: User) {
     user.updatedAt = new Date();
     return (
-      await UserModel.findByIdAndUpdate(user.id, { $set: { ...user } }, { new: true }).exec()
+      await UserModel.findByIdAndUpdate(
+        user.id,
+        { $set: { ...user, name: `${user.firstName || ''} ${user.lastName || ''}` } },
+        { new: true },
+      ).exec()
     )?.toJSON();
   }
 }
