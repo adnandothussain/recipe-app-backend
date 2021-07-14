@@ -44,3 +44,7 @@ RecipeRequestTC.addResolver({
     return recipeRequest;
   },
 });
+
+export const listRecipeRequests = RecipeRequestTC.mongooseResolvers.connection({
+  name: 'recipeRequests',
+});
