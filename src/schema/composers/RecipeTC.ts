@@ -2,44 +2,10 @@ import { composeMongoose } from 'graphql-compose-mongoose';
 import { ResolverResolveParams, schemaComposer } from 'graphql-compose';
 import Logger from '../../core/Logger';
 import RecipeRepo from '../../database/repository/recipe.repo';
-import { RecipeModel } from '../../database/model/recipe.model';
+import Recipe, { RecipeModel } from '../../database/model/recipe.model';
 import { UserTC } from './UserTC';
 
 export const RecipeTC = composeMongoose(RecipeModel);
-
-// const RecipesResolverTC = schemaComposer.createResolver({
-//   type: [RecipeTC],
-//   args: {
-//     top: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     recent: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     byCusine: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     trending: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//   },
-//   resolve: async ({ args }) => {
-//     try {
-//       const recipes = await RecipeRepo.findMany({
-//         dates: args.recent ? [moment().subtract(5, 'days').toDate(), new Date()] : undefined,
-//         top: Boolean(args.top),
-//       });
-//       return recipes;
-//     } catch (error) {
-//       Logger.warn(error);
-//       throw new Error('Unable to get top recipes');
-//     }
-//   },
-// });
 
 const RecipeFeedTC = schemaComposer.createObjectTC({
   name: 'RecipeFeed',
@@ -49,22 +15,6 @@ const RecipeFeedTC = schemaComposer.createObjectTC({
     recent: [RecipeTC],
   },
 });
-
-// RecipeFeedTC.addRelation('top', {
-//   resolver: () => RecipesResolverTC,
-//   type: () => [RecipeTC],
-//   prepareArgs: {
-//     top: true,
-//   },
-// });
-
-// RecipeFeedTC.addRelation('recent', {
-//   resolver: () => RecipesResolverTC,
-//   type: () => [RecipeTC],
-//   prepareArgs: {
-//     recent: true,
-//   },
-// });
 
 RecipeTC.addRelation('createdBy', {
   resolver: () => UserTC.mongooseResolvers.findById(),
@@ -160,54 +110,49 @@ export const searchRecipes = RecipeTC.mongooseResolvers
       },
   );
 
-// const RecipesITC = schemaComposer.createInputTC({
-//   name: 'RecipesFilter',
-//   fields: {
-//     top: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     recent: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     byCusine: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//     trending: {
-//       type: 'Boolean',
-//       default: false,
-//     },
-//   },
-// });
+schemaComposer.createInputTC({
+  name: 'RecipeIngredientInput',
+  fields: {
+    name: 'String!',
+    amount: 'String!',
+    group: 'String!',
+  },
+});
+schemaComposer.createInputTC({
+  name: 'CreateRecipeInput',
+  fields: {
+    name: 'String!',
+    description: {
+      type: 'String',
+      defaultValue: '',
+    },
+    image: 'String!',
+    tags: '[String!]',
+    ingredients: '[RecipeIngredientInput!]!',
+    instructions: '[String!]!',
+    restraunts: '[MongoID!]',
+    cookingTime: 'Int',
+    serving: 'Int',
+    calories: 'Int',
+  },
+});
 
-// RecipeTC.mongooseResolvers
-//   .connection({
-//     name: 'recipesList',
-//   })
-//   .wrap((rp) => {
-//     rp.addArgs({
-//       recipesFilter: {
-//         type: 'RecipesFilter!',
-//         description: 'Filter for recipes',
-//       },
-//     });
-//     return rp;
-//   })
-//   .wrapResolve((next) => (rp) => {
-//     const args = rp.arg as any;
-//     const filter: any = {
-//       OR: [],
-//     };
-//     const { top, recent } = args.recipesFilter;
-//     if (top) {
-//       filter.OR.push({ _operators: { rating: { gte: 4 } } });
-//     }
-//     if (recent) {
-//       filter.OR.push({
-//         _operators: { createdAt: { gte: moment().subtract(5, 'days').toDate(), lte: new Date() } },
-//       });
-//     }
-//     return next(rp);
-//   });
+RecipeTC.addResolver({
+  name: 'createRecipe',
+  type: 'Recipe!',
+  args: {
+    input: 'CreateRecipeInput!',
+  },
+  resolve: async ({ args: { input }, context }: any) => {
+    try {
+      const newRecipe = await RecipeRepo.create({
+        ...input,
+        createdBy: context.user._id,
+      } as Recipe);
+      return newRecipe;
+    } catch (error) {
+      Logger.error('createRecipe error: ', error);
+      throw error;
+    }
+  },
+});
