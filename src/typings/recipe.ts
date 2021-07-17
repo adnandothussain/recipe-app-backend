@@ -1,8 +1,9 @@
 import User from '../database/model/user.model';
 
 export interface IIngredient {
-  amount: string;
+  amount: number;
   name: string;
+  substitutes: string[];
 }
 
 export interface IRecipeTip {

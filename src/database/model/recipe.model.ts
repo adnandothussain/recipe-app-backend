@@ -2,6 +2,7 @@ import { Schema, model, Document } from 'mongoose';
 import { defaultModelOptions } from './constant.model';
 import { IIngredient, IRecipeTip } from '../../typings/recipe';
 import User from './user.model';
+import Restraunt from './restraunt.model';
 
 export const DOCUMENT_NAME = 'Recipe';
 export const COLLECTION_NAME = 'recipes';
@@ -10,10 +11,10 @@ export default interface Recipe extends Document {
   name: string;
   description: string;
   image: string;
-  rating: number;
+  video: string;
   tags: string[];
   ingredients: IIngredient & { group: string }[];
-  restraunts?: string[];
+  restraunts: Restraunt[];
   instructions: string[];
   // TODO, should be a seperate document for tips
   tips: IRecipeTip[];
@@ -40,10 +41,9 @@ const schema = new Schema<Recipe>(
       type: String,
       required: true,
     },
-    rating: {
-      type: Number,
+    video: {
+      type: String,
       required: false,
-      default: 0,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
@@ -73,13 +73,14 @@ const schema = new Schema<Recipe>(
         amount: { type: String, required: true },
         name: { type: String, required: true },
         group: { type: String, required: true, default: 'All ingredients' },
+        substitutes: [{ type: String, required: false }],
       },
     ],
     restraunts: [
       {
-        type: String,
-        required: false,
-        default: '',
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'Restraunt',
       },
     ],
     instructions: [
