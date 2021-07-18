@@ -4,15 +4,26 @@ import Logger from '../../core/Logger';
 import RecipeRepo from '../../database/repository/recipe.repo';
 import Recipe, { RecipeModel } from '../../database/model/recipe.model';
 import { UserTC } from './UserTC';
+import RatingRepo from '../../database/repository/rating.repo';
+import Rating from '../../database/model/rating.model';
+import { BadRequestError, NotFoundError } from '../../core/ApiError';
 
 export const RecipeTC = composeMongoose(RecipeModel);
 
 const RecipeFeedTC = schemaComposer.createObjectTC({
   name: 'RecipeFeed',
   fields: {
-    // hasData: 'Boolean!',
     top: [RecipeTC],
     recent: [RecipeTC],
+  },
+});
+
+RecipeTC.addFields({
+  totalRating: {
+    type: 'Float!',
+    resolve: async (source: Recipe) => {
+      return await RatingRepo.getTotalRating(source._id);
+    },
   },
 });
 
@@ -152,6 +163,35 @@ RecipeTC.addResolver({
       return newRecipe;
     } catch (error) {
       Logger.error('createRecipe error: ', error);
+      throw error;
+    }
+  },
+});
+
+RecipeTC.addResolver({
+  name: 'rateRecipe',
+  type: 'Int!',
+  args: {
+    recipeId: 'MongoID!',
+    rating: 'Int!',
+  },
+  resolve: async ({ args: { recipeId, rating }, context }: any) => {
+    try {
+      const recipe = await RecipeModel.findById(recipeId);
+      if (recipe === null) {
+        throw new NotFoundError('No recipe found'); // 404 Error
+      }
+      if (recipe.createdBy === context.user._id) {
+        throw new BadRequestError('Cannot rate your own created recipe');
+      }
+      await RatingRepo.create({
+        user: context.user._id,
+        recipe: recipeId,
+        rating: rating,
+      } as Rating);
+      return rating;
+    } catch (error) {
+      Logger.error('rateRecipe error: ', error);
       throw error;
     }
   },

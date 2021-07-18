@@ -14,6 +14,7 @@ schemaComposer.Mutation.addFields({
   requestRecipe: RecipeRequestTC.getResolver('requestRecipe'),
   createRecipe: RecipeTC.getResolver('createRecipe'),
   createBookmark: BookmarkTC.getResolver('createBookmark'),
+  rateRecipe: RecipeTC.getResolver('rateRecipe'),
 });
 
 export default schemaComposer.buildSchema();
