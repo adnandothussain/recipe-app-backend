@@ -10,6 +10,8 @@ import { BadRequestError, NotFoundError } from '../../core/ApiError';
 
 export const RecipeTC = composeMongoose(RecipeModel);
 
+RecipeTC.removeField('_id');
+
 const RecipeFeedTC = schemaComposer.createObjectTC({
   name: 'RecipeFeed',
   fields: {
@@ -19,6 +21,10 @@ const RecipeFeedTC = schemaComposer.createObjectTC({
 });
 
 RecipeTC.addFields({
+  id: {
+    type: 'ID!',
+    resolve: async (source: Recipe) => source.id,
+  },
   totalRating: {
     type: 'Float!',
     resolve: async (source: Recipe) => {
