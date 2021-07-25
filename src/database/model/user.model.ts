@@ -64,6 +64,19 @@ const UserSchema = new Schema<User>(
       type: Schema.Types.Boolean,
       default: true,
     },
+    city: {
+      type: String,
+      required: true,
+    },
+    street: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+      default: 'PK',
+    },
   },
   {
     toJSON: {
