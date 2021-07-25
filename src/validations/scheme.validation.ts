@@ -18,7 +18,7 @@ export default {
   updateUserInfo: Joi.object().keys({
     firstName: Joi.string().required().min(3),
     lastName: Joi.string().optional().min(3),
-    username: Joi.string().required(),
+    username: Joi.string().required().min(3),
     avatar: Joi.string().optional().uri(),
     gender: Joi.string().valid(...Object.values(Gender)),
   }),
