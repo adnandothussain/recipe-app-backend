@@ -125,9 +125,9 @@ type Recipe {
   cookingTime: Float
   serving: Float
   calories: Float
-  _id: MongoID!
   updatedAt: Date
   createdAt: Date
+  id: ID!
   totalRating: Float!
 }
 
