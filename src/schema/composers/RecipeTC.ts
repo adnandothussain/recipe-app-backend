@@ -7,6 +7,7 @@ import { UserTC } from './UserTC';
 import RatingRepo from '../../database/repository/rating.repo';
 import Rating from '../../database/model/rating.model';
 import { BadRequestError, NotFoundError } from '../../core/ApiError';
+import { CategoryModel } from '../../database/model/category.model';
 
 export const RecipeTC = composeMongoose(RecipeModel);
 
@@ -17,6 +18,7 @@ const RecipeFeedTC = schemaComposer.createObjectTC({
   fields: {
     top: [RecipeTC],
     recent: [RecipeTC],
+    cusines: [RecipeTC],
   },
 });
 
@@ -66,13 +68,14 @@ RecipeTC.addResolver({
     try {
       const topRecipes = await RecipeRepo.findMany({
         top: Boolean(args.top),
-        limit: 8,
+        limit: 10,
       });
       const recentRecipes = await RecipeRepo.findMany({
         sort: { updatedAt: -1 },
         limit: 10,
       });
-      return { top: topRecipes, recent: recentRecipes };
+      const cusines = await CategoryModel.find({}, null, { sort: { name: 1 } });
+      return { top: topRecipes, recent: recentRecipes, cusines };
     } catch (error) {
       Logger.warn(error);
       throw new Error('Unable to get top recipes');
