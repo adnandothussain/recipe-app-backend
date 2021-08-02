@@ -226,6 +226,8 @@ type User {
     """
     sort: SortRecipeBookmarksBookmarkEnum = _ID_DESC
   ): BookmarkRecipeBookmarks
+  noOfRecipes: Int
+  likeRequests: Int!
 }
 
 enum EnumUserGender {
