@@ -13,7 +13,7 @@ const graphQLServer = new GraphQLServer().getApolloServer();
 graphQLServer.applyMiddleware({ app });
 
 const { PORT } = process.env;
-const APP_PORT = PORT || 3000;
+const APP_PORT = PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
