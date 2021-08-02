@@ -14,18 +14,31 @@
     "update-schema": "ts-node ./src/schema/updateSchema.ts"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "apollo-server-express": "^2.25.1",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql": "^15.5.1",
     "graphql-compose": "^9.0.1",
-    "husky": "4.3.8"
+    "graphql-compose-mongoose": "^9.4.2",
+    "husky": "4.3.8",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.14",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@types/bcrypt": "^5.0.0",
+    "@types/hapi__joi": "^17.1.6",
+    "@types/jsonwebtoken": "^8.5.2",
+    "@types/lodash": "^4.14.170",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "eslint": "^7.29.0",

@@ -19,10 +19,6 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "build",
-    "baseUrl": "src",
-    "paths": {
-      "*": ["node_modules/*"]
-    },
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,

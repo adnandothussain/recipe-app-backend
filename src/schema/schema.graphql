@@ -1,23 +1,692 @@
 type Query {
-  posts: [Post]
-  author(id: Int!): Author
+  recipes(top: Boolean, recent: Boolean, cusines: Boolean, trending: Boolean): RecipeFeed
+  userById(_id: MongoID!): User
+  searchRecipes(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Filter by fields
+    """
+    filter: FilterFindManyRecipeInput
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortSearchRecipesRecipeEnum = _ID_DESC
+
+    """
+    query string
+    """
+    queryString: String = null
+  ): RecipeSearchRecipes
+  searchRestraunts(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Filter by fields
+    """
+    filter: FilterFindManyRestrauntInput
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortSearchRestrauntsRestrauntEnum = _ID_DESC
+
+    """
+    query string
+    """
+    queryString: String = null
+  ): RestrauntSearchRestraunts
+  listRecipeRequests(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Filter by fields
+    """
+    filter: FilterFindManyRecipeRequestInput
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortRecipeRequestsRecipeRequestEnum = _ID_DESC
+  ): RecipeRequestRecipeRequests
 }
 
-type Post {
-  id: Int!
-  title: String
-  votes: Int
-  authorId: Int
-  author: Author
+type RecipeFeed {
+  top: [Recipe]
+  recent: [Recipe]
+  cusines: [Recipe]
 }
 
-type Author {
-  id: Int!
+type Recipe {
+  name: String!
+  description: String
+  image: String!
+  video: String
+  createdBy: User
+  tags: [String]
+  tips: [RecipeTips]
+  ingredients: [RecipeIngredients]
+  restraunts: [MongoID]
+  instructions: [String]
+  cookingTime: Float
+  serving: Float
+  calories: Float
+  updatedAt: Date
+  createdAt: Date
+  id: ID!
+  totalRating: Float!
+}
+
+type User {
+  email: String!
   firstName: String
   lastName: String
-  posts: [Post]
+  name: String
+  username: String
+  password: String!
+  gender: EnumUserGender
+  avatar: String
+  status: Boolean
+  city: String!
+  street: String!
+  country: String!
+  _id: MongoID!
+  updatedAt: Date
+  createdAt: Date
+  recipes(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortUserRecipesRecipeEnum = _ID_DESC
+  ): RecipeUserRecipes
+  recipeRequests(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortRecipeRequestsRecipeRequestEnum = _ID_DESC
+  ): RecipeRequestRecipeRequests
+  bookmars(
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    first: Int
+
+    """
+    Forward pagination argument for returning at most first edges
+    """
+    after: String
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    last: Int
+
+    """
+    Backward pagination argument for returning at most last edges
+    """
+    before: String
+
+    """
+    Sort argument for data ordering
+    """
+    sort: SortRecipeBookmarksBookmarkEnum = _ID_DESC
+  ): BookmarkRecipeBookmarks
+  noOfRecipes: Int
+  likeRequests: Int!
+}
+
+enum EnumUserGender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+"""
+The `ID` scalar type represents a unique MongoDB identifier in collection. MongoDB by default use 12-byte ObjectId value (https://docs.mongodb.com/manual/reference/bson-types/#objectid). But MongoDB also may accepts string or integer as correct values for _id field.
+"""
+scalar MongoID
+
+scalar Date
+
+"""
+A connection to a list of items.
+"""
+type RecipeUserRecipes {
+  """
+  Total object count.
+  """
+  count: Int!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Information to aid in pagination.
+  """
+  edges: [RecipeEdge!]!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+}
+
+"""
+An edge in a connection.
+"""
+type RecipeEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Recipe!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}
+
+enum SortUserRecipesRecipeEnum {
+  _ID_DESC
+  _ID_ASC
+}
+
+"""
+A connection to a list of items.
+"""
+type RecipeRequestRecipeRequests {
+  """
+  Total object count.
+  """
+  count: Int!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Information to aid in pagination.
+  """
+  edges: [RecipeRequestEdge!]!
+}
+
+"""
+An edge in a connection.
+"""
+type RecipeRequestEdge {
+  """
+  The item at the end of the edge
+  """
+  node: RecipeRequest!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}
+
+type RecipeRequest {
+  user: User
+  description: String!
+  image: String!
+  likes: [MongoID]
+  _id: MongoID!
+  updatedAt: Date
+  createdAt: Date
+}
+
+enum SortRecipeRequestsRecipeRequestEnum {
+  _ID_DESC
+  _ID_ASC
+}
+
+"""
+A connection to a list of items.
+"""
+type BookmarkRecipeBookmarks {
+  """
+  Total object count.
+  """
+  count: Int!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Information to aid in pagination.
+  """
+  edges: [BookmarkEdge!]!
+}
+
+"""
+An edge in a connection.
+"""
+type BookmarkEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Bookmark!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}
+
+type Bookmark {
+  user: User
+  recipe: Recipe
+  _id: MongoID!
+  updatedAt: Date
+  createdAt: Date
+}
+
+enum SortRecipeBookmarksBookmarkEnum {
+  _ID_DESC
+  _ID_ASC
+}
+
+type RecipeTips {
+  text: String!
+  image: String
+  user: MongoID!
+  _id: MongoID
+}
+
+type RecipeIngredients {
+  amount: String!
+  name: String!
+  group: String!
+  substitutes: [String]
+  _id: MongoID
+}
+
+"""
+A connection to a list of items.
+"""
+type RecipeSearchRecipes {
+  """
+  Total object count.
+  """
+  count: Int!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Information to aid in pagination.
+  """
+  edges: [RecipeEdge!]!
+}
+
+"""
+
+"""
+input FilterFindManyRecipeInput {
+  name: String
+  description: String
+  image: String
+  video: String
+  createdBy: MongoID
+  tags: [String]
+  tips: [FilterFindManyRecipeTipsInput]
+  ingredients: [FilterFindManyRecipeIngredientsInput]
+  restraunts: [MongoID]
+  instructions: [String]
+  cookingTime: Float
+  serving: Float
+  calories: Float
+  _id: MongoID
+  updatedAt: Date
+  createdAt: Date
+
+  """
+  List of *indexed* fields that can be filtered via operators.
+  """
+  _operators: FilterFindManyRecipeOperatorsInput
+  OR: [FilterFindManyRecipeInput!]
+  AND: [FilterFindManyRecipeInput!]
+}
+
+"""
+
+"""
+input FilterFindManyRecipeTipsInput {
+  text: String
+  image: String
+  user: MongoID
+  _id: MongoID
+}
+
+"""
+
+"""
+input FilterFindManyRecipeIngredientsInput {
+  amount: String
+  name: String
+  group: String
+  substitutes: [String]
+  _id: MongoID
+}
+
+"""
+For performance reason this type contains only *indexed* fields.
+"""
+input FilterFindManyRecipeOperatorsInput {
+  _id: FilterFindManyRecipe_idOperatorsInput
+}
+
+input FilterFindManyRecipe_idOperatorsInput {
+  gt: MongoID
+  gte: MongoID
+  lt: MongoID
+  lte: MongoID
+  ne: MongoID
+  in: [MongoID]
+  nin: [MongoID]
+  exists: Boolean
+}
+
+enum SortSearchRecipesRecipeEnum {
+  _ID_DESC
+  _ID_ASC
+}
+
+"""
+A connection to a list of items.
+"""
+type RestrauntSearchRestraunts {
+  """
+  Total object count.
+  """
+  count: Int!
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+
+  """
+  Information to aid in pagination.
+  """
+  edges: [RestrauntEdge!]!
+}
+
+"""
+An edge in a connection.
+"""
+type RestrauntEdge {
+  """
+  The item at the end of the edge
+  """
+  node: Restraunt!
+
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
+}
+
+type Restraunt {
+  name: String!
+  image: String!
+  street: String!
+  city: String!
+  country: String!
+  coords: [Float]
+  tags: [String]
+  priceRange: String!
+  _id: MongoID!
+  updatedAt: Date
+  createdAt: Date
+}
+
+"""
+
+"""
+input FilterFindManyRestrauntInput {
+  name: String
+  image: String
+  street: String
+  city: String
+  country: String
+  coords: [Float]
+  tags: [String]
+  priceRange: String
+  _id: MongoID
+  updatedAt: Date
+  createdAt: Date
+
+  """
+  List of *indexed* fields that can be filtered via operators.
+  """
+  _operators: FilterFindManyRestrauntOperatorsInput
+  OR: [FilterFindManyRestrauntInput!]
+  AND: [FilterFindManyRestrauntInput!]
+}
+
+"""
+For performance reason this type contains only *indexed* fields.
+"""
+input FilterFindManyRestrauntOperatorsInput {
+  coords: FilterFindManyRestrauntCoordsOperatorsInput
+  _id: FilterFindManyRestraunt_idOperatorsInput
+}
+
+input FilterFindManyRestrauntCoordsOperatorsInput {
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  ne: Float
+  in: [Float]
+  nin: [Float]
+  exists: Boolean
+}
+
+input FilterFindManyRestraunt_idOperatorsInput {
+  gt: MongoID
+  gte: MongoID
+  lt: MongoID
+  lte: MongoID
+  ne: MongoID
+  in: [MongoID]
+  nin: [MongoID]
+  exists: Boolean
+}
+
+enum SortSearchRestrauntsRestrauntEnum {
+  _ID_DESC
+  _ID_ASC
+}
+
+"""
+
+"""
+input FilterFindManyRecipeRequestInput {
+  user: MongoID
+  description: String
+  image: String
+  likes: [MongoID]
+  _id: MongoID
+  updatedAt: Date
+  createdAt: Date
+
+  """
+  List of *indexed* fields that can be filtered via operators.
+  """
+  _operators: FilterFindManyRecipeRequestOperatorsInput
+  OR: [FilterFindManyRecipeRequestInput!]
+  AND: [FilterFindManyRecipeRequestInput!]
+}
+
+"""
+For performance reason this type contains only *indexed* fields.
+"""
+input FilterFindManyRecipeRequestOperatorsInput {
+  _id: FilterFindManyRecipeRequest_idOperatorsInput
+}
+
+input FilterFindManyRecipeRequest_idOperatorsInput {
+  gt: MongoID
+  gte: MongoID
+  lt: MongoID
+  lte: MongoID
+  ne: MongoID
+  in: [MongoID]
+  nin: [MongoID]
+  exists: Boolean
 }
 
 type Mutation {
-  addPost(title: String, votes: Int, authorId: Int): Post
+  requestRecipe(input: RequestRecipeInput): RecipeRequest
+  createRecipe(input: CreateRecipeInput!): Recipe!
+  createBookmark(recipeId: MongoID!): Bookmark!
+  rateRecipe(recipeId: MongoID!, rating: Int!): Int!
+}
+
+input RequestRecipeInput {
+  description: String!
+  image: String
+}
+
+input CreateRecipeInput {
+  name: String!
+  description: String = ""
+  image: String!
+  tags: [String!]
+  ingredients: [RecipeIngredientInput!]!
+  instructions: [String!]!
+  restraunts: [MongoID!]
+  cookingTime: Int
+  serving: Int
+  calories: Int
+}
+
+input RecipeIngredientInput {
+  name: String!
+  amount: String!
+  group: String!
 }
