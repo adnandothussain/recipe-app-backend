@@ -8,10 +8,9 @@ import RatingRepo from '../../database/repository/rating.repo';
 import Rating from '../../database/model/rating.model';
 import { BadRequestError, NotFoundError } from '../../core/ApiError';
 import { CategoryModel } from '../../database/model/category.model';
+import BookmarkRepo from '../../database/repository/bookmark.repo';
 
 export const RecipeTC = composeMongoose(RecipeModel);
-
-RecipeTC.removeField('_id');
 
 const RecipeFeedTC = schemaComposer.createObjectTC({
   name: 'RecipeFeed',
@@ -23,14 +22,16 @@ const RecipeFeedTC = schemaComposer.createObjectTC({
 });
 
 RecipeTC.addFields({
-  id: {
-    type: 'ID!',
-    resolve: async (source: Recipe) => source.id,
-  },
   totalRating: {
     type: 'Float!',
     resolve: async (source: Recipe) => {
       return await RatingRepo.getTotalRating(source._id);
+    },
+  },
+  isBookmark: {
+    type: 'Boolean!',
+    resolve: async (source: Recipe, _: unknown, context: any) => {
+      return await BookmarkRepo.checkIsBookmark({ recipeId: source._id, userId: context.user._id });
     },
   },
 });
