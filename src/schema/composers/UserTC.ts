@@ -32,7 +32,7 @@ UserTC.addRelation('recipeRequests', {
   },
 });
 
-UserTC.addRelation('bookmars', {
+UserTC.addRelation('bookmarks', {
   resolver: () => BookmarkTC.mongooseResolvers.connection({ name: 'recipeBookmarks' }),
   prepareArgs: {
     filter: (source) => ({

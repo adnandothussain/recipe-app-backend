@@ -1,6 +1,16 @@
 type Query {
+  """
+  Fetches an object that has globally unique ID among all types
+  """
+  node(
+    """
+    The globally unique ID among all types
+    """
+    id: ID!
+  ): Node
   recipes(top: Boolean, recent: Boolean, cusines: Boolean, trending: Boolean): RecipeFeed
   userById(_id: MongoID!): User
+  recipeById(_id: MongoID!): Recipe
   searchRecipes(
     """
     Forward pagination argument for returning at most first edges
@@ -106,6 +116,16 @@ type Query {
   ): RecipeRequestRecipeRequests
 }
 
+"""
+An object, that can be fetched by the globally unique ID among all types.
+"""
+interface Node {
+  """
+  The globally unique ID among all types.
+  """
+  id: ID!
+}
+
 type RecipeFeed {
   top: [Recipe]
   recent: [Recipe]
@@ -119,20 +139,21 @@ type Recipe {
   video: String
   createdBy: User
   tags: [String]
-  tips: [RecipeTips]
+  tips(limit: Int = 100, sort: SortFindByIdsRecipeTipInput): [RecipeTip!]!
   ingredients: [RecipeIngredients]
   restraunts: [MongoID]
   instructions: [String]
   cookingTime: Float
   serving: Float
   calories: Float
+  _id: MongoID!
   updatedAt: Date
   createdAt: Date
-  id: ID!
   totalRating: Float!
+  isBookmark: Boolean!
 }
 
-type User {
+type User implements Node {
   email: String!
   firstName: String
   lastName: String
@@ -200,7 +221,7 @@ type User {
     """
     sort: SortRecipeRequestsRecipeRequestEnum = _ID_DESC
   ): RecipeRequestRecipeRequests
-  bookmars(
+  bookmarks(
     """
     Forward pagination argument for returning at most first edges
     """
@@ -228,6 +249,11 @@ type User {
   ): BookmarkRecipeBookmarks
   noOfRecipes: Int
   likeRequests: Int!
+
+  """
+  The globally unique ID among all types
+  """
+  id: ID!
 }
 
 enum EnumUserGender {
@@ -406,11 +432,18 @@ enum SortRecipeBookmarksBookmarkEnum {
   _ID_ASC
 }
 
-type RecipeTips {
+type RecipeTip {
   text: String!
   image: String
-  user: MongoID!
-  _id: MongoID
+  user: User
+  _id: MongoID!
+  updatedAt: Date
+  createdAt: Date
+}
+
+enum SortFindByIdsRecipeTipInput {
+  _ID_ASC
+  _ID_DESC
 }
 
 type RecipeIngredients {
@@ -451,7 +484,7 @@ input FilterFindManyRecipeInput {
   video: String
   createdBy: MongoID
   tags: [String]
-  tips: [FilterFindManyRecipeTipsInput]
+  tips: [MongoID]
   ingredients: [FilterFindManyRecipeIngredientsInput]
   restraunts: [MongoID]
   instructions: [String]
@@ -468,16 +501,6 @@ input FilterFindManyRecipeInput {
   _operators: FilterFindManyRecipeOperatorsInput
   OR: [FilterFindManyRecipeInput!]
   AND: [FilterFindManyRecipeInput!]
-}
-
-"""
-
-"""
-input FilterFindManyRecipeTipsInput {
-  text: String
-  image: String
-  user: MongoID
-  _id: MongoID
 }
 
 """
