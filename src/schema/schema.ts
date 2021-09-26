@@ -36,6 +36,7 @@ composeWithRelay(schemaComposer.Query);
 schemaComposer.Query.addFields({
   recipes: RecipeTC.getResolver('recipeFeed'),
   userById: UserTC.mongooseResolvers.findById(),
+  recipeById: RecipeTC.mongooseResolvers.findById(),
   searchRecipes,
   searchRestraunts,
   listRecipeRequests,

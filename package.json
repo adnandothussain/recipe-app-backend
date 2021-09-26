@@ -11,7 +11,7 @@
     "dev": "nodemon",
     "debug": "nodemon --debug=6666",
     "build": "tsc",
-    "update-schema": "ts-node ./src/schema/updateSchema.ts"
+    "update-schema": "ts-node ./src/schema/updateSchema.ts && prettier --write ./src/schema/schema.graphql"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
