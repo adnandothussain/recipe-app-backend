@@ -17,9 +17,11 @@ export default {
     .unknown(true),
   updateUserInfo: Joi.object().keys({
     firstName: Joi.string().required().min(3),
-    lastName: Joi.string().optional().min(3),
+    lastName: Joi.string().allow('').optional(),
     username: Joi.string().required().min(3),
     avatar: Joi.string().optional().uri(),
-    gender: Joi.string().valid(...Object.values(Gender)),
+    gender: Joi.string()
+      .valid(...Object.values(Gender))
+      .optional(),
   }),
 };

@@ -29,7 +29,7 @@ const login = async (req: Request, res: Response) => {
   const tokens = await createTokens({ ...user, id: user._id }, accessTokenKey, refreshTokenKey);
 
   new SuccessResponse('Login Success', {
-    user: _.pick(user, ['id', 'name', 'email', 'avatar']),
+    user: _.pick(user, ['id', 'firstName', 'username', 'name', 'email', 'avatar']),
     tokens: tokens,
   }).send(res);
 };
@@ -90,13 +90,14 @@ const signup = async (req: ProtectedRequest, res: Response) => {
 };
 
 const updateUser = async (req: ProtectedRequest, res: Response) => {
-  const { firstName, lastName, username, avatar } = req.body;
+  const { firstName, lastName, username, avatar, gender } = req.body;
   const updatedUser = await UserRepo.updateInfo({
     id: req.user.id,
     firstName,
     lastName,
     username,
     avatar,
+    gender,
   } as User);
   new SuccessResponse('Signup Successful', { user: updatedUser }).send(res);
 };
