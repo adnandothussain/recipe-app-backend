@@ -66,15 +66,15 @@ const UserSchema = new Schema<User>(
     },
     city: {
       type: String,
-      required: true,
+      required: false,
     },
     street: {
       type: String,
-      required: true,
+      required: false,
     },
     country: {
       type: String,
-      required: true,
+      required: false,
       default: 'PK',
     },
   },

@@ -68,7 +68,7 @@ const refreshToken = async (req: ProtectedRequest, res: Response) => {
 
 const signup = async (req: ProtectedRequest, res: Response) => {
   const user = await UserRepo.findByEmail(req.body.email);
-  if (user) throw new BadRequestError('User already registered');
+  if (user) throw new BadRequestError('User with same email already exist');
 
   const accessTokenKey = crypto.randomBytes(64).toString('hex');
   const refreshTokenKey = crypto.randomBytes(64).toString('hex');
@@ -98,7 +98,7 @@ const updateUser = async (req: ProtectedRequest, res: Response) => {
     username,
     avatar,
   } as User);
-  new SuccessResponse('Signup Successful', updatedUser).send(res);
+  new SuccessResponse('Signup Successful', { user: updatedUser }).send(res);
 };
 
 export const AuthController = {
